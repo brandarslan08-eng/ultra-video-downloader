@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0,
+      maximum-scale=1.0, user-scalable=no">
+
+<title>Ultra Video Downloader</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    min-height:100vh;
+    background:#080b12;
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+.app{
+    width:100%;
+    max-width:480px;
+}
+
+.header{
+    text-align:center;
+    margin-bottom:25px;
+}
+
+.logo{
+    width:70px;
+    height:70px;
+    margin:auto;
+    border-radius:20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:34px;
+    background:#151b29;
+    box-shadow:0 10px 35px rgba(0,0,0,.4);
+}
+
+h1{
+    margin-top:15px;
+    font-size:26px;
+}
+
+.subtitle{
+    color:#8993a8;
+    margin-top:7px;
+    font-size:14px;
+}
+
+.card{
+    background:#111622;
+    border:1px solid #20283a;
+    border-radius:20px;
+    padding:20px;
+    box-shadow:0 15px 40px rgba(0,0,0,.3);
+}
+
+.label{
+    color:#9ca7bb;
+    font-size:13px;
+    margin-bottom:8px;
+}
+
+.inputBox{
+    display:flex;
+    gap:8px;
+}
+
+input{
+    flex:1;
+    min-width:0;
+    background:#090d15;
+    border:1px solid #293247;
+    color:white;
+    border-radius:12px;
+    padding:14px;
+    outline:none;
+    font-size:14px;
+}
+
+input:focus{
+    border-color:#5d7cff;
+}
+
+button{
+    border:0;
+    cursor:pointer;
+}
+
+.paste{
+    width:52px;
+    border-radius:12px;
+    background:#202a3d;
+    color:white;
+    font-size:20px;
+}
+
+.analyze{
+    width:100%;
+    margin-top:15px;
+    padding:15px;
+    border-radius:12px;
+    background:#5d7cff;
+    color:white;
+    font-size:16px;
+    font-weight:bold;
+}
+
+.analyze:active{
+    transform:scale(.98);
+}
+
+.result{
+    display:none;
+    margin-top:20px;
+}
+
+.thumbnail{
+    width:100%;
+    height:190px;
+    border-radius:15px;
+    background:
+      linear-gradient(135deg,#18243d,#0d111b);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:55px;
+    margin-bottom:15px;
+}
+  .thumbnail img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    border-radius:15px;
+    display:none;
+  }
+
+.videoTitle{
+    font-size:17px;
+    font-weight:bold;
+    margin-bottom:15px;
+}
+
+.quality{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+}
+
+.quality button{
+    padding:13px;
+    border-radius:11px;
+    background:#1b2333;
+    color:white;
+    border:1px solid #2b354b;
+}
+
+.quality button.selected{
+    background:#5d7cff;
+    border-color:#5d7cff;
+}
+
+.download{
+    width:100%;
+    margin-top:15px;
+    padding:15px;
+    border-radius:12px;
+    background:#19b978;
+    color:white;
+    font-size:16px;
+    font-weight:bold;
+}
+
+.status{
+    display:none;
+    margin-top:18px;
+}
+
+.statusText{
+    color:#aeb7c8;
+    font-size:13px;
+    margin-bottom:8px;
+}
+
+.progress{
+    width:100%;
+    height:9px;
+    background:#202838;
+    border-radius:20px;
+    overflow:hidden;
+}
+
+.bar{
+    width:0%;
+    height:100%;
+    background:#5d7cff;
+    transition:.3s;
+}
+
+.percent{
+    text-align:right;
+    color:#8993a8;
+    font-size:12px;
+    margin-top:6px;
+}
+
+.history{
+    margin-top:20px;
+    text-align:center;
+    color:#69748a;
+    font-size:13px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <div class="header">
+        <div class="logo">⬇️</div>
+        <h1>Ultra Video Downloader</h1>
+        <div class="subtitle">
+            Download videos in your preferred quality
+        </div>
+    </div>
+
+    <div class="card">
+
+        <div class="label">Video URL</div>
+
+        <div class="inputBox">
+            <input
+                id="url"
+                type="url"
+                placeholder="Paste video URL here...">
+
+            <button class="paste" onclick="pasteURL()">
+                📋
+            </button>
+        </div>
+
+        <button class="analyze" onclick="analyzeVideo()">
+            Analyze Video
+        </button>
+
+        <div class="result" id="result">
+
+            <div class="thumbnail">
+    <img id="videoThumb" src="" alt="Video thumbnail">
+            </div>
+
+            <div class="videoTitle" id="videoTitle">
+                Video ready
+            </div>
+
+            <div class="label">
+                Select Quality
+            </div>
+
+            <div class="quality">
+
+                <button onclick="selectQuality(this)">
+                    360p
+                </button>
+
+                <button onclick="selectQuality(this)">
+                    720p HD
+                </button>
+
+                <button onclick="selectQuality(this)">
+                    1080p FHD
+                </button>
+
+                <button onclick="selectQuality(this)">
+                    2160p 4K
+                </button>
+
+            </div>
+
+            <button class="download" onclick="startDownload()">
+                ⬇ Download
+            </button>
+
+            <div class="status" id="status">
+
+                <div class="statusText" id="statusText">
+                    Preparing...
+                </div>
+
+                <div class="progress">
+                    <div class="bar" id="bar"></div>
+                </div>
+
+                <div class="percent" id="percent">
+                    0%
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="history">
+        Ultra Downloader • Ready
+    </div>
+
+</div>
+
+
+<script>
+// @ts-nocheck
+let selectedQuality = "";
+
+async function pasteURL(){
+
+    try{
+        const text = await navigator.clipboard.readText();
+        document.getElementById("url").value = text;
+    }catch(e){
+        alert("Clipboard permission nahi mili.");
+    }
+}
+
+
+function analyzeVideo() {
+    const url = document.getElementById("url").value.trim();
+
+    if (!url) {
+        alert("Pehle YouTube URL paste karo.");
+        return;
+    }
+
+    const videoId = getYouTubeVideoId(url);
+
+    if (!videoId) {
+        alert("Valid YouTube URL paste karo.");
+        return;
+    }
+
+    const result = document.getElementById("result");
+    const title = document.getElementById("videoTitle");
+    const thumb = document.getElementById("videoThumb");
+
+    result.style.display = "block";
+
+    title.textContent = "Loading video...";
+
+    thumb.src =
+        "https://img.youtube.com/vi/" + videoId + "/maxresdefault.jpg";
+
+    thumb.style.display = "block";
+
+    thumb.onerror = function() {
+        thumb.src =
+            "https://img.youtube.com/vi/" + videoId + "/hqdefault.jpg";
+    };
+
+    setTimeout(() => {
+        title.textContent = "Video detected — choose quality";
+    }, 800);
+}
+
+function analyzeVideo() {
+    const url = document.getElementById("url").value.trim();
+
+    if (!url) {
+        alert("Pehle YouTube URL paste karo.");
+        return;
+    }
+
+    const videoId = getYouTubeVideoId(url);
+
+    if (!videoId) {
+        alert("Valid YouTube URL paste karo.");
+        return;
+    }
+
+    const result = document.getElementById("result");
+    const title = document.getElementById("videoTitle");
+    const thumb = document.getElementById("videoThumb");
+
+    result.style.display = "block";
+
+    title.textContent = "Loading video...";
+
+    thumb.src =
+        "https://img.youtube.com/vi/" + videoId + "/maxresdefault.jpg";
+
+    thumb.style.display = "block";
+
+    thumb.onerror = function() {
+        thumb.src =
+            "https://img.youtube.com/vi/" + videoId + "/hqdefault.jpg";
+    };
+
+    setTimeout(() => {
+        title.textContent = "Video detected — choose quality";
+    }, 800);
+}
+
+function getYouTubeVideoId(/** @type {string} */ url) {
+
+    try {
+        const parsed = new URL(url);
+
+        if (parsed.hostname.includes("youtu.be")) {
+            return parsed.pathname.substring(1).split("/")[0];
+        }
+
+        if (
+            parsed.hostname.includes("youtube.com") ||
+            parsed.hostname.includes("www.youtube-nocookie.com")
+        ) {
+            return parsed.searchParams.get("v");
+        }
+
+    } catch (error) {
+        return null;
+    }
+
+    return null;
+}
+
+function selectQuality(/** @type {HTMLButtonElement} */ button) {
+    document
+        .querySelectorAll(".quality button")
+        .forEach(function(btn) {
+            btn.classList.remove("selected");
+        });
+
+    button.classList.add("selected");
+    selectedQuality = button.textContent;
+}
+
+
+function startDownload(){
+
+    if(!selectedQuality){
+        alert("Pehle quality select karo.");
+        return;
+    }
+
+    const status = document.getElementById("status");
+    const bar = document.getElementById("bar");
+    const percent = document.getElementById("percent");
+    const statusText = document.getElementById("statusText");
+
+    status.style.display = "block";
+
+    let progress = 0;
+
+    const timer = setInterval(() => {
+
+        progress += Math.floor(Math.random() * 8) + 3;
+
+        if(progress >= 100){
+
+            progress = 100;
+
+            clearInterval(timer);
+
+            statusText.textContent =
+                "Ready — backend download engine ab connect karna hai.";
+
+        }else{
+
+            statusText.textContent =
+                "Preparing " + selectedQuality + "...";
+
+        }
+
+        bar.style.width = progress + "%";
+        percent.textContent = progress + "%";
+
+    },350);
+
+}
+
+</script>
+
+</body>
+  </html>
